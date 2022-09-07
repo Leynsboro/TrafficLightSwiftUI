@@ -9,63 +9,42 @@ import SwiftUI
 
 struct ContentView: View {
     
-    enum Colors {
-        case red, yellow, green
+    enum Lights {
+        case red, yellow, green, nothing
     }
     
     @State private var buttonText = "START"
     
-    @State private var color = Colors.red
-    @State private var redLight = 0.3
-    @State private var yellowLight = 0.3
-    @State private var greenLight = 0.3
+    @State private var currentLight = Lights.nothing
     
+    private func changeColor() {
+        buttonText = "NEXT"
+        switch currentLight {
+        case .red: currentLight = .yellow
+        case .yellow: currentLight = .green
+        case .green: currentLight = .red
+        case .nothing: currentLight = .red
+        }
+    }
+}
+
+extension ContentView {
     var body: some View {
             ZStack {
                 Color(.black)
                     .ignoresSafeArea()
-                VStack {
-                    LightView(color: .red)
-                        .opacity(redLight)
-                    LightView(color: .orange)
-                        .opacity(yellowLight)
-                    LightView(color: .green)
-                        .opacity(greenLight)
+                VStack(spacing: 20) {
+                    LightView(color: .red, opacity: currentLight == .red ? 1.0 : 0.3)
+                    LightView(color: .yellow, opacity: currentLight == .yellow ? 1.0 : 0.3)
+                    LightView(color: .green, opacity: currentLight == .green ? 1.0 : 0.3)
+                    
                     Spacer()
-                    button
+                    
+                    ChangeColorButton(label: buttonText) {
+                        changeColor()
+                    }
                 }
             }
-    }
-    
-    private var button: some View {
-        Button(action: changeColor) {
-            Text(buttonText)
-                .font(.title)
-        }
-        .frame(width: 200, height: 70)
-        .foregroundColor(.white)
-        .background(.blue)
-        .overlay(RoundedRectangle(cornerRadius: 25).stroke(Color.white, lineWidth: 4))
-        .cornerRadius(25)
-        .padding()
-    }
-    
-    private func changeColor() {
-        buttonText = "NEXT"
-        switch color {
-        case .red:
-            redLight = 1.0
-            greenLight = 0.3
-            color = .yellow
-        case .yellow:
-            yellowLight = 1.0
-            redLight = 0.3
-            color = .green
-        case .green:
-            greenLight = 1.0
-            yellowLight = 0.3
-            color = .red
-        }
     }
 }
 
